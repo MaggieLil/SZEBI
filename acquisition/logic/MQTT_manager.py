@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional, List, Dict, Any
+from typing import List, Dict, Any
 
 class MQTTManager:
     """
@@ -48,19 +48,25 @@ class MQTTManager:
 
         print(f"MQTT: Subskrybowano temat: {topic}")
 
-    def receive(self) -> Optional[Dict[str, Any]]:
-        """
-        Odbiera surową wiadomość MQTT (JSON/dict) i zwraca ją do HandleData.
-        Symuluje odbiór danych z Modułu Symulacji Środowiska.
-        """
-        if not self.connection_status:
-            return None
 
-        raw_message = {
-            'sensor_id': 1,
-            'timestamp': datetime.datetime.now().isoformat(),
-            'value': 21.3,
-            'unit': 'C'
+    def receive(self) -> List[Dict[str, Any]]:
+        # [MOCK: Symulacja odbioru]
+        topic = "environment/abc-123-def/status/temperature"
+        payload = {
+            'value': 21.5,
+            'timestamp': datetime.datetime.now().isoformat()
         }
 
-        return raw_message
+        topic_parts = topic.split('/')
+
+        if len(topic_parts) < 4:
+            return []
+
+        processed_message = {
+            'location_uuid': topic_parts[1],
+            'param_name': topic_parts[3],
+            'value': payload['value'],
+            'timestamp': payload['timestamp']
+        }
+
+        return [processed_message]
