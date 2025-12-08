@@ -6,30 +6,30 @@ from simulation.logic.base.weather import Weather
 
 
 @pytest.fixture
-def simulation():
+def simulation() -> Simulation:
     sim = Simulation()
     return sim
 
 
 @pytest.fixture
-def simple_environment():
+def simple_environment() -> Environment:
     weather = Weather()
     env = Environment(weather=weather, initial_temp=21.0)
     return env
 
 
-def test_simulation_initial_state(simulation):
-    assert simulation.get_running() is False
+def test_simulation_initial_state(simulation: Simulation):
+    assert simulation.is_running() is False
     assert simulation.current_tick == 0
     assert simulation.get_time_resolution() == simulation.base_millis_per_tick
 
 
-def test_add_environment(simulation, simple_environment):
+def test_add_environment(simulation: Simulation, simple_environment: Environment):
     simulation.add_environment(simple_environment)
     assert len(simulation.get_environments()) == 1
 
 
-def test_tick_updates_environment(simulation, simple_environment):
+def test_tick_updates_environment(simulation: Simulation, simple_environment: Environment):
     simulation.add_environment(simple_environment)
 
     initial_temp = simple_environment.get_temperature()
@@ -50,7 +50,7 @@ def test_tick_updates_environment(simulation, simple_environment):
 
 
 
-def test_simulation_speed(simulation):
+def test_simulation_speed(simulation: Simulation):
     assert simulation.get_simulation_speed() == 1.0
 
     simulation.set_simulation_speed(2.0)
@@ -66,7 +66,7 @@ def test_simulation_speed(simulation):
         simulation.set_simulation_speed(1000.0)
 
 
-def test_time_progress(simulation, simple_environment):
+def test_time_progress(simulation: Simulation, simple_environment: Environment):
     simulation.add_environment(simple_environment)
 
     t0 = simulation.get_current_date()
@@ -76,17 +76,17 @@ def test_time_progress(simulation, simple_environment):
     assert t1 > t0  # czas powinien iść do przodu
 
 
-def test_start_and_stop(simulation):
+def test_start_and_stop(simulation: Simulation):
     simulation.start()
-    assert simulation.get_running() is True
+    assert simulation.is_running() is True
 
     time.sleep(0.1)  # pozwala wykonać kilka ticków
     simulation.stop()
 
-    assert simulation.get_running() is False
+    assert simulation.is_running() is False
 
 
-def test_threading_does_not_crash(simulation, simple_environment):
+def test_threading_does_not_crash(simulation: Simulation, simple_environment: Environment):
     simulation.add_environment(simple_environment)
     simulation.set_simulation_speed(0.1)  # szybsze ticki dla testu
 
