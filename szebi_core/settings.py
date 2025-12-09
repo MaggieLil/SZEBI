@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     
     # Modular apps - TYMCZASOWO WYŁĄCZONE
     'simulation.apps.SimulationConfig',
-    # 'acquisition.apps.AcquisitionConfig',
+    'acquisition.apps.AcquisitionConfig',
     # 'analysis.apps.AnalysisConfig',
     # 'forecasting.apps.ForecastingConfig',
     # 'optimization.apps.OptimizationConfig',

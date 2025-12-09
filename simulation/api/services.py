@@ -1,7 +1,6 @@
 import random
 from datetime import timedelta
-from django.utils import timezone
-from .models import SimulationState, WeatherData, Device
+from .models import SimulationState, WeatherData
 
 class EnvironmentSimulator:
     def __init__(self):
