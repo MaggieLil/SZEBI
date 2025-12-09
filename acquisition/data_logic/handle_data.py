@@ -10,10 +10,10 @@ from ..models import Measurement, DataLog, MeasurementStatus, DataLogLevel, Loca
 
 
 class HandleData:
-    def __init__(self, db_manager: DatabaseManager):
-        self.validator = Validator()
-        self.deduplicator = Deduplicator()
-        self.transformer = Transformer()
+    def __init__(self, db_manager: DatabaseManager, validator: Validator, deduplicator: Deduplicator, transformer: Transformer):
+        self.validator = validator
+        self.deduplicator = deduplicator
+        self.transformer = transformer
         self.db_manager = db_manager
 
     def process(self, raw_data: Dict) -> Optional[Measurement]:

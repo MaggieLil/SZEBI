@@ -2,10 +2,6 @@ import datetime
 from typing import List, Dict, Any
 
 class MQTTManager:
-    """
-        Zarządza połączeniem z brokerem MQTT, subskrypcjami i odbiorem wiadomości
-        z Modułu Symulacji Środowiska.
-        """
 
     def __init__(self, broker_url: str, topics: List[str]):
         self.broker_url = broker_url

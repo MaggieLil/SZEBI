@@ -5,11 +5,6 @@ from .logic.database_manager import DatabaseManager
 from .models import Measurement, DataLog
 
 class AcquisitionDataService:
-    """
-    Warstwa Usługowa: Publiczne API Modułu Akwizycji dla innych modułów SZEBI.
-    Umożliwia pobieranie danych historycznych, bieżącego stanu sensorów i logów.
-    """
-
     def __init__(self, db_manager: DatabaseManager):
         self.db_manager = db_manager
 
@@ -38,8 +33,8 @@ class AcquisitionDataService:
 
     def get_sensor_statistics(self) -> List[Dict[str, Any]]:
         """
-        [API Read Method 3] Pobiera statystyki czujników.
-        Używane przez Moduł Monitorowania.
+        [API Read Method 3] Pobiera agregowane statystyki czujników (np. status,
+        liczba aktywnych/nieaktywnych, czas ostatniej komunikacji).
         """
         return self.db_manager.get_sensor_statistics()
 
@@ -48,3 +43,22 @@ class AcquisitionDataService:
         [API Read Method 4] Pobiera logi błędów wg poziomu.
         """
         return self.db_manager.get_logs(level)
+
+    def get_filtered_analysis_data(
+            self,
+            room: Optional[str] = None,
+            metric: Optional[str] = None,
+            start_time: Optional[datetime.datetime] = None,
+            end_time: Optional[datetime.datetime] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        [API Read Method 5] Udostępnia dane z zaawansowanym filtrowaniem. Umożliwia filtrowanie po lokalizacji (room)
+        i typie sensora.
+        """
+
+        return self.db_manager.get_filtered_measurements(
+            room=room,
+            metric=metric,
+            start_time=start_time,
+            end_time=end_time
+        )

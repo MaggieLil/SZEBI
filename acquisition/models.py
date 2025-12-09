@@ -1,4 +1,4 @@
-from django.db import models
+# from django.db import models
 
 from .models_definitions.data_models import *
 from .models_definitions.enumeration_models import *

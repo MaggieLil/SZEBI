@@ -1,12 +1,9 @@
 import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from ..models import Measurement, DataLog, Sensor, SensorStatus
 
 class DatabaseManager:
-    """
-    Klasa DatabaseManager obsługuje wszystkie interakcje modułu akwizycji
-    z bazą danych PostgreSQL.
-    """
+
     def __init__(self):
         self.db_connection = None
 
@@ -31,7 +28,7 @@ class DatabaseManager:
 
     def get_sensor(self, sensor_id: int) -> Optional[Sensor]:
         """
-        Pobiera obiekt Sensor na podstawie sensor_id. Stub: zwraca fikcyjny obiekt.
+        Pobiera obiekt Sensor na podstawie sensor_id..
         """
         print(f"DB: GET SENSOR {sensor_id}: Fikcyjny obiekt zwrócony.")
 
@@ -43,18 +40,30 @@ class DatabaseManager:
 
     def get_measurements(self, sensor_id: int, start: datetime.datetime, end: datetime.datetime) -> List[Measurement]:
         """
-        Pobiera listę pomiarów z danego zakresu czasu dla modułów Prognozowania/Analizy.
+        Pobiera listę pomiarów z danego zakresu czasu.
         """
         return []
 
     def get_logs(self, level: str) -> List[DataLog]:
         """
-        Pobiera logi błędów według poziomu (np. ERROR) dla Administratora.
+        Pobiera logi błędów według poziomu (np. ERROR).
         """
         return []
 
     def get_sensor_statistics(self) -> list:
         """
-        Pobiera statystyki czujników (do Monitorowania).
+        Pobiera statystyki czujników.
+        """
+        return []
+
+    def get_filtered_measurements(
+            self,
+            room: Optional[str] = None,
+            metric: Optional[str] = None,
+            start_time: Optional[datetime.datetime] = None,
+            end_time: Optional[datetime.datetime] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Pobiera pomiary z opcjonalnym filtrowaniem po pokoju, metryce(sensor_type) i czasie.
         """
         return []
