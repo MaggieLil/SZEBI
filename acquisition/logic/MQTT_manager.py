@@ -45,24 +45,15 @@ class MQTTManager:
         print(f"MQTT: Subskrybowano temat: {topic}")
 
 
-    def receive(self) -> List[Dict[str, Any]]:
-        # [MOCK: Symulacja odbioru]
-        topic = "environment/abc-123-def/status/temperature"
-        payload = {
-            'value': 21.5,
+    def receive(self) -> List[Dict[str, Any]]:        
+        import random
+        val = 20.0 + random.uniform(-2.0, 2.0)
+        
+        processed_message = {
+            'location_uuid': 'SALON-01', 
+            'param_name': 'temperature',
+            'value': round(val, 2),
             'timestamp': datetime.datetime.now().isoformat()
         }
-
-        topic_parts = topic.split('/')
-
-        if len(topic_parts) < 4:
-            return []
-
-        processed_message = {
-            'location_uuid': topic_parts[1],
-            'param_name': topic_parts[3],
-            'value': payload['value'],
-            'timestamp': payload['timestamp']
-        }
-
+        
         return [processed_message]

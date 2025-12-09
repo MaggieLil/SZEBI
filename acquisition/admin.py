@@ -1,11 +1,14 @@
 from django.contrib import admin
-from .models import DataLog,Location, Sensor, SensorType, Measurement, SensorStatus, DataLogLevel, MeasurementStatus
-# from .models import DataPoint
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.urls import path
 
 
-# @admin.register(DataPoint)
-# class DataPointAdmin(admin.ModelAdmin):
-#     list_display = ('source', 'timestamp', 'value')
+from .models import (
+    DataLog, Location, Sensor, SensorType, Measurement, 
+    AcquisitionControl 
+)
+from . import mqtt_runner
 
 @admin.register(Measurement)
 class MeasurementAdmin(admin.ModelAdmin):
@@ -43,3 +46,39 @@ class LocationAdmin(admin.ModelAdmin):
 class SensorTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'default_unit', 'min_value', 'max_value')
     search_fields = ('name', 'default_unit')
+
+@admin.register(AcquisitionControl)
+class AcquisitionControlAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False 
+        
+    def has_delete_permission(self, request, obj=None):
+        return False 
+
+    def has_change_permission(self, request, obj=None):
+        return False 
+
+    def changelist_view(self, request, extra_context=None):
+        if request.method == "POST":
+            action = request.POST.get("action")
+            
+            if action == "start":
+                msg = mqtt_runner.start_mqtt_worker()
+                self.message_user(request, msg, level=messages.SUCCESS)
+            elif action == "stop":
+                msg = mqtt_runner.stop_mqtt_worker()
+                self.message_user(request, msg, level=messages.WARNING)
+                
+            return redirect(request.path)
+
+        status = "Działa (ON)" if mqtt_runner.is_running() else "Zatrzymany (OFF)"
+        status_color = "green" if mqtt_runner.is_running() else "red"
+
+        context = {
+            'title': 'Panel Sterowania Akwizycją',
+            'status': status,
+            'status_color': status_color,
+            **self.admin_site.each_context(request),
+        }
+        
+        return render(request, 'admin/acquisition/control_panel.html', context)
