@@ -20,15 +20,11 @@ class AcquisitionDataService:
         """
         return self.db_manager.get_measurements(sensor_id, start_time, end_time)
 
-    def get_latest_measurement(self, sensor_id: int) -> Optional[Measurement]:
+def get_latest_measurement(self, sensor_id: int) -> Optional[Measurement]:
         """
-        [API Read Method 2] Pobiera najnowszy, pojedynczy pomiar dla czujnika.
+        Pobiera najnowszy, pojedynczy pomiar dla czujnika, niezależnie od tego, kiedy wpłynął.
         """
-        end_time = datetime.datetime.now()
-        start_time = end_time - datetime.timedelta(minutes=1)
-
-        latest_list = self.db_manager.get_measurements(sensor_id, start_time, end_time)
-        return latest_list[-1] if latest_list else None
+        return self.db_manager.get_last_measurement(sensor_id)
 
 
     def get_sensor_statistics(self) -> List[Dict[str, Any]]:

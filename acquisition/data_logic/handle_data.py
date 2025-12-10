@@ -6,6 +6,7 @@ from ..models import Measurement, DataLog, MeasurementStatus, DataLogLevel, Loca
 from .validator import Validator
 from .deduplicator import Deduplicator
 from .transformer import Transformer
+from django.utils import timezone
 
 class HandleData:
     def __init__(self, db_manager: DatabaseManager, validator: Validator, deduplicator: Deduplicator, transformer: Transformer):
@@ -36,7 +37,7 @@ class HandleData:
         try:
             ts = datetime.datetime.fromisoformat(raw_data['timestamp'])
         except:
-            ts = datetime.datetime.now()
+            ts = timezone.now()
 
         measurement = Measurement(
             sensor=sensor,

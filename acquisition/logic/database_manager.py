@@ -1,18 +1,28 @@
 import datetime
 from typing import List, Optional, Dict, Any
-from ..models import Measurement, DataLog, Sensor, SensorStatus
+from acquisition.models import Measurement, DataLog, Sensor, SensorStatus
 
 class DatabaseManager:
-
-    def __init__(self):
-        self.db_connection = None
-
     def insert_measurements(self, measurement: Measurement) -> None:
-        """
-        Zapisuje zwalidowane/oznaczone dane pomiarowe do tabeli measurements.
-        """
-        print(
-            f"DB: INSERT MEASUREMENT: Sensor {measurement.sensor.pk}, Value: {measurement.value}, Status: {measurement.status}")
+        try:
+            measurement.save()
+            print(f"DB: ZAPISANO POMIAR: ID={measurement.pk} Value={measurement.value}")
+        except Exception as e:
+            print(f"DB ERROR przy zapisie pomiaru: {e}")
+
+    def insert_data_log(self, log: DataLog) -> None:
+        try:
+            log.save()
+            print(f"DB: ZAPISANO LOG: {log.level} - {log.message[:30]}...")
+        except Exception as e:
+            print(f"DB ERROR przy zapisie logu: {e}")
+
+    def update_sensor(self, sensor_id: int, timestamp: datetime.datetime) -> None:
+        try:
+            Sensor.objects.filter(pk=sensor_id).update(last_communication=timestamp)
+        except Exception as e:
+            print(f"DB ERROR przy aktualizacji sensora: {e}")
+
 
     def insert_data_log(self, log: DataLog) -> None:
         """
@@ -39,10 +49,25 @@ class DatabaseManager:
         )
 
     def get_measurements(self, sensor_id: int, start: datetime.datetime, end: datetime.datetime) -> List[Measurement]:
-        """
-        Pobiera listę pomiarów z danego zakresu czasu.
-        """
-        return []
+        return list(Measurement.objects.filter(
+            sensor_id=sensor_id,
+            timestamp__range=(start, end)
+        ).order_by('timestamp'))
+
+    def get_last_measurement(self, sensor_id: int) -> Optional[Measurement]:
+        return Measurement.objects.filter(sensor_id=sensor_id).order_by('-timestamp').first()
+
+    def get_sensor_statistics(self) -> List[Dict[str, Any]]:
+        stats = []
+        for sensor in Sensor.objects.all():
+            count = Measurement.objects.filter(sensor=sensor).count()
+            stats.append({
+                'sensor_name': sensor.name,
+                'status': sensor.status,
+                'total_measurements': count,
+                'last_seen': sensor.last_communication
+            })
+        return stats
 
     def get_logs(self, level: str) -> List[DataLog]:
         """
